@@ -1,0 +1,126 @@
+{% verbatim %} 
+
+<!DOCTYPE html>
+<html>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+<style>
+  table, th , td  {
+    border: 1px solid grey;
+    border-collapse: collapse;
+    padding: 5px;
+    cursor:pointer;
+  }
+
+  table tr:nth-child(odd) {
+    background-color: #f1f1f1;
+  }
+  table tr:nth-child(even) {
+    background-color: #ffffff;
+  }
+  tr:hover td {
+    background-color: lightblue;
+  }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<body>
+
+  <div ng-app="myApp" ng-controller="booksCtrl" class="col-md-4 col-md-offset-4">
+    <div ng-show="showBookTable">
+      <table>
+        <tr>
+          <th>id</th>
+          <th>Title</th>
+          <th>Description</th>
+
+        </tr>
+        <tr ng-repeat="book in books" ng-click=setSelectedBook(book)>
+          <td >{{book.pk}}</td>
+          <td>{{ book.fields.description}}</td>
+          <td>{{ book.fields.title }}</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div ng-show="showSingleBook">
+      Book id: {{selectedBook.pk}} <br> 
+      Book author: {{selectedBook.fields.author}} <br> 
+      Book title: {{selectedBook.fields.title}}<br> 
+      Book description: {{selectedBook.fields.description}}<br> 
+      <p>
+        <button ng-click=showTable() class="btn btn-primary">Show all books</button>
+      </p>
+    </div>
+
+    <div>
+      <h1>Add new book</h1>
+      <form role="form" ng-submit="addBook()">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" ng-model="newTitle" placeholder="add book title" />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" class="form-control" ng-model="newDesc" placeholder="add book description" />
+        </div>
+
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+    var app = angular.module('myApp', []);
+    app.controller('booksCtrl', function($scope, $http) {
+      $scope.showBookTable = true;
+      $scope.showSingleBook = false;
+
+      $scope.showTable = function() {
+        console.log("running showTable");
+        $scope.showBookTable = true;
+        $scope.showSingleBook = false;
+      }
+
+      $scope.addBook = function() {
+        
+        // {"pk":"11","fields": { "title": $scope.newTitle, "description": $scope.newDesc}}
+        
+        $http.post("/books/ ", {"title":$scope.newTitle, description:$scope.newDesc})
+        .then(function (response) {
+         var book = response.data;
+         $scope.books.push(book);
+      });
+      }
+
+      $scope.setSelectedBook = function(book) {
+        $scope.selectedBook = book;
+        console.log(book);
+        $scope.showBookTable = false; 
+        $scope.showSingleBook = true; 
+        // hide table and show one book
+      };
+
+      $http.get("/books")
+      .then(function (response) {
+        $scope.books = response.data;
+      });
+
+      
+    });
+  </script>
+
+</body>
+</html>
+
+
+
+
+{% endverbatim %} 

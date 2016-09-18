@@ -1,0 +1,49 @@
+Interviewing and Technical Communication
+6. Practice describing how Cosmeticall is built. You can answer the questions I sent you in a previous mail about this. Practice answering each question in text, then practice answering it verbally. In both, make sure to use only complete English sentences (not lists or graphs or pictures),
+
+
+- What does the app do? What is the business purpose behind it and business model?
+
+- How is it built - what languages and frameworks are used (BE and FE), what DB and hosting? What are the pros and cons of each? 
+
+- What components are interesting (to you) - for example the use of JS to "switch" screens in the FE without reloading the page or to make AJAX calls to get data without refreshing the page; some examples of routes in the BE and how they interact with MongoDB.
+
+- what are the core functionalities (the most important things that happen or that can be done with) the app? Go into detail into how they are implemented and describe the logic that happens. For example, in Cosmeticall, a user searches for cosmeticians by submitting a form with details about which cosmeticians they are looking for. This form sends an AJAX request to the server which hits the route (which route?), which then does.... and returns ..., and then after the AJAX gets the response it does .... 
+
+(Do the same for a few core functionalities. Practice explaining these out loud, without looking at the computer. Imagine questions someone might ask about the flow of information in these functionalities.)
+
+- is there an admin panel? How is it written, how does it work? How do you check someone is an admin? 
+
+-admin
+-session
+-sending sms with link
+
+- What unique features does this app have (e.g. payments or sending SMS); how are they implemented? 
+
+- Recall as you were learning this: which concepts or functionalities or areas in the app were the most confusing for you to learn or to implement? Why? Which areas were the most interesting or enjoyable?
+
+-admin-tables
+-ajax
+
+
+
+
+ e.g. "For persistence/As a database, we used ......, 
+ we have collections for .... and ...." or 
+ "On the front-end we used .......... to accomplish ..........". 
+
+7. Draw the architecture of Cosmeticall. 
+What pieces do we have? 
+How do they connect? 
+Is there anything you're not sure about? 
+
+
+Soniya
+
+http://soniya.herokuapp.com/admin/api_spec
+
+
+clicks pay - we get info - we tell paypal "prepare payment page" - paypal returns us the url - we return URL to user as HTML redirect - at payment page he pays - if it's successfull, paypal redirects user to return URL that we prapared - paypal includes the token, that we use to verify that user page. we grab token, go to paypal, give it token, and get payment status FROM paypal.
+
+
+
