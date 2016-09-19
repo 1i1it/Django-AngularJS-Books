@@ -130,9 +130,14 @@
       $scope.removeBook = function(book) {
         var index = $scope.books.indexOf(book);
         $scope.books.splice(index,1); 
+        $http.delete('/books/' + book.pk);
         $scope.showTable()
         $scope.showAddBook = true;
-        $http.delete('/books/' + book.pk);
+
+        $http.get("/books")
+      .then(function (response) {
+        $scope.books = response.data;
+      });
 
       }
 
