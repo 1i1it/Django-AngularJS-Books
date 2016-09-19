@@ -1,19 +1,11 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.views import generic
-
+from django.shortcuts import render
 from .models import Book
 from django.core import serializers
 import json
-
-from django.http import HttpResponse
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-#from books.serializers import BookSerializer
-
 import pdb
 from django.views.decorators.csrf import csrf_exempt
 from django.http import QueryDict
@@ -30,7 +22,6 @@ def index(request):
 		return JsonResponse(data, safe=False)
 
 	elif request.method == 'POST':
-		#data=request.DATA
 		params = json.loads(request.body)
 		book = Book.objects.create(title=params['title'], description=params['description'], author_id=1)
 		data = serializers.serialize('json', [book])
@@ -40,9 +31,6 @@ def index(request):
 
 @csrf_exempt
 def book_detail(request, pk):
-	"""
-	Get, update, or delete a specific book
-	"""
 	if request.method == 'GET':
 		try:
 			book = Book.objects.get(pk=pk)
@@ -52,13 +40,15 @@ def book_detail(request, pk):
 			data = {"error":"book not found"}
 		return JsonResponse(data, safe=False)
 	
-
 	elif request.method == 'PUT':
-		put = QueryDict(request.body)
-		title = put.get('title','default title')
-		description = put.get('description','default description')
+		params = json.loads(request.body)
+		title=params['title']
+		description=params['description']
+
 		Book.objects.filter(pk=pk).update(title=title, description=description)
 		book = Book.objects.get(pk=pk)
+
+
 		data = serializers.serialize('json', [book])
 		data = json.loads(data)[0]
 		return JsonResponse(data, safe=False)

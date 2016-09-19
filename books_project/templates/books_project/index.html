@@ -27,7 +27,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <body>
 
-  <div ng-app="myApp" ng-controller="booksCtrl" class="col-md-4 col-md-offset-4">
+  <div ng-app="myApp" ng-controller="booksCtrl" class="col-md-4 col-md-offset-4" style="margin-top: 20px;" >
     <div ng-show="showBookTable">
       <table>
         <tr>
@@ -46,16 +46,50 @@
     </div>
 
     <div ng-show="showSingleBook">
-      Book id: {{selectedBook.pk}} <br> 
-      Book author: {{selectedBook.fields.author}} <br> 
-      Book title: {{selectedBook.fields.title}}<br> 
-      Book description: {{selectedBook.fields.description}}<br> 
-      <p>
-        <button ng-click=showTable() class="btn btn-primary">Show all books</button>
-      </p>
+      <strong>Book id: </strong>{{selectedBook.pk}} <br> 
+      <strong>Book author: </strong>{{selectedBook.fields.author}} <br> 
+      <strong>Book title: </strong>{{selectedBook.fields.title}}<br> 
+      <strong>Book description: </strong>{{selectedBook.fields.description}}<br> 
+      <div> 
+        <p>
+          <button ng-click=removeBook(selectedBook) class="btn btn-primary">Delete</button>
+        </p>
+
+        <p>
+          <button ng-click=showEdit() class="btn btn-primary">Edit</button>
+        </p>
+
+
+        <p>
+          <button ng-click=showTable() class="btn btn-primary">All books</button>
+        </p>
+
+      </div>
     </div>
 
-    <div>
+    
+
+    <div ng-show="showEditBook">
+      <h1>Edit book</h1>
+      <form role="form" ng-submit="editBook(selectedBook)">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" ng-model="selectedBook.fields.title"  />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" class="form-control" ng-model="selectedBook.fields.description" />
+        </div>
+
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+
+    <div ng-show="showAddBook">
       <h1>Add new book</h1>
       <form role="form" ng-submit="addBook()">
         <div class="form-group">
@@ -74,6 +108,7 @@
         </div>
       </form>
     </div>
+
   </div>
 
 
@@ -82,22 +117,39 @@
     app.controller('booksCtrl', function($scope, $http) {
       $scope.showBookTable = true;
       $scope.showSingleBook = false;
+      $scope.showAddBook = true;
+      $scope.showEditBook = false;
+
+      $scope.showEdit = function(book) {
+        $scope.showEditBook = true;
+      }
+
+      $scope.editBook = function(book) {
+        $http.put("/books/" + book.pk, {"title": book.fields.title, description: book.fields.description});
+        $scope.showTable();   
+      }
+
+      $scope.removeBook = function(book) {
+        var index = $scope.books.indexOf(book);
+        $scope.books.splice(index,1); 
+        $scope.showTable()
+        $http.delete('/books/' + book.pk);
+      }
 
       $scope.showTable = function() {
         console.log("running showTable");
         $scope.showBookTable = true;
         $scope.showSingleBook = false;
+        $scope.showEditBook = false;
       }
 
       $scope.addBook = function() {
-        
-        // {"pk":"11","fields": { "title": $scope.newTitle, "description": $scope.newDesc}}
-        
+        $scope.showAddBook = true;
         $http.post("/books/ ", {"title":$scope.newTitle, description:$scope.newDesc})
         .then(function (response) {
          var book = response.data;
          $scope.books.push(book);
-      });
+       });
       }
 
       $scope.setSelectedBook = function(book) {
@@ -105,7 +157,6 @@
         console.log(book);
         $scope.showBookTable = false; 
         $scope.showSingleBook = true; 
-        // hide table and show one book
       };
 
       $http.get("/books")
