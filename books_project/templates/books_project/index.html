@@ -28,24 +28,62 @@
 <body>
 
   <div ng-app="myApp" ng-controller="booksCtrl" class="col-md-4 col-md-offset-4" style="margin-top: 20px;" >
+  <h1>Books application</h1>
     <div ng-show="showBookTable">
       <table>
         <tr>
           <th>id</th>
           <th>Title</th>
-          <th>Description</th>
-
         </tr>
         <tr ng-repeat="book in books" ng-click=setSelectedBook(book)>
           <td >{{book.pk}}</td>
-          <td>{{ book.fields.description}}</td>
           <td>{{ book.fields.title }}</td>
         </tr>
       </table>
 
     </div>
 
-    <div ng-show="showSingleBook">
+    <div ng-show="showEditBook">
+      <h2>Edit book</h2>
+      <form role="form" ng-submit="editBook(selectedBook)">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" ng-model="selectedBook.fields.title"  />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea class="form-control" ng-model="selectedBook.fields.description"> </textarea>
+        </div>
+
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+
+    <div ng-show="showAddBook">
+      <h2>Add new book</h2>
+      <form role="form" ng-submit="addBook()">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" class="form-control" ng-model="newTitle" placeholder="add book title" / required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea  class="form-control" ng-model="newDesc" placeholder="add book description" required> </textarea>
+        </div>
+
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+
+    <div ng-show="showSingleBook" style="word-wrap: break-word;">
       <strong>Book id: </strong>{{selectedBook.pk}} <br> 
       <strong>Book author: </strong>{{selectedBook.fields.author_first_name}} {{selectedBook.fields.author_last_name}} <br> 
       <strong>Book title: </strong>{{selectedBook.fields.title}}<br> 
@@ -68,46 +106,6 @@
     </div>
 
     
-
-    <div ng-show="showEditBook">
-      <h1>Edit book</h1>
-      <form role="form" ng-submit="editBook(selectedBook)">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" ng-model="selectedBook.fields.title"  />
-        </div>
-
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input type="text" class="form-control" ng-model="selectedBook.fields.description" />
-        </div>
-
-
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
-    </div>
-
-    <div ng-show="showAddBook">
-      <h1>Add new book</h1>
-      <form role="form" ng-submit="addBook()">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input type="text" class="form-control" ng-model="newTitle" placeholder="add book title" />
-        </div>
-
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input type="text" class="form-control" ng-model="newDesc" placeholder="add book description" />
-        </div>
-
-
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
-    </div>
 
   </div>
 
@@ -133,13 +131,16 @@
         var index = $scope.books.indexOf(book);
         $scope.books.splice(index,1); 
         $scope.showTable()
+        $scope.showAddBook = true;
         $http.delete('/books/' + book.pk);
+
       }
 
       $scope.showTable = function() {
         $scope.showBookTable = true;
         $scope.showSingleBook = false;
         $scope.showEditBook = false;
+        $scope.showAddBook = true;
       }
 
       $scope.addBook = function() {
@@ -149,13 +150,15 @@
          var book = response.data;
          $scope.books.push(book);
        });
+         $scope.showTable()
       }
 
       $scope.setSelectedBook = function(book) {
-      $http.get("/books/" + book.pk)
-      .then(function (response) {
-        $scope.selectedBook = response.data;
-      });
+        $scope.showAddBook = false;
+        $http.get("/books/" + book.pk)
+        .then(function (response) {
+          $scope.selectedBook = response.data;
+        });
         $scope.showBookTable = false; 
         $scope.showSingleBook = true; 
       };
