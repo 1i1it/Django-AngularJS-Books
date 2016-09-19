@@ -18,7 +18,6 @@ def index(request):
 	if request.method == 'GET':
 		data = serializers.serialize('json', Book.objects.all())
 		data = json.loads(data)
-		#data = {"data": data}
 		return JsonResponse(data, safe=False)
 
 	elif request.method == 'POST':
