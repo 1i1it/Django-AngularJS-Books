@@ -124,11 +124,12 @@
 
       $scope.editBook = function(book) {
         $http.put("/books/" + book.pk, {"title": book.fields.title, description: book.fields.description});
+        current_book = $scope.books.filter(function(cur_book) { return cur_book.pk == book.pk })[0];
+        current_book.fields.title = book.fields.title;
       }
 
       $scope.removeBook = function(book) {
-        var index = $scope.books.indexOf(book);
-        $scope.books.splice(index,1); 
+        $scope.books = $scope.books.filter(function(cur_book) { return cur_book.pk != book.pk });
         $http.delete('/books/' + book.pk);
         $scope.showAddBook = true;
         $scope.showTable()
@@ -139,11 +140,6 @@
         $scope.showSingleBook = false;
         $scope.showEditBook = false;
         $scope.showAddBook = true;
-
-        $http.get("/books")
-      .then(function (response) {
-        $scope.books = response.data;
-      });
       }
 
       $scope.addBook = function() {
