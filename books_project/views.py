@@ -47,11 +47,8 @@ def book_detail(request, pk):
 		params = json.loads(request.body)
 		title=params['title']
 		description=params['description']
-
 		Book.objects.filter(pk=pk).update(title=title, description=description)
 		book = Book.objects.get(pk=pk)
-
-
 		data = serializers.serialize('json', [book])
 		data = json.loads(data)[0]
 		return JsonResponse(data, safe=False)
