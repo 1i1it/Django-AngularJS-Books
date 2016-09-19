@@ -47,7 +47,7 @@
 
     <div ng-show="showSingleBook">
       <strong>Book id: </strong>{{selectedBook.pk}} <br> 
-      <strong>Book author: </strong>{{selectedBook.fields.author}} <br> 
+      <strong>Book author: </strong>{{selectedBook.fields.author_first_name}} {{selectedBook.fields.author_last_name}} <br> 
       <strong>Book title: </strong>{{selectedBook.fields.title}}<br> 
       <strong>Book description: </strong>{{selectedBook.fields.description}}<br> 
       <div> 
@@ -137,7 +137,6 @@
       }
 
       $scope.showTable = function() {
-        console.log("running showTable");
         $scope.showBookTable = true;
         $scope.showSingleBook = false;
         $scope.showEditBook = false;
@@ -153,8 +152,10 @@
       }
 
       $scope.setSelectedBook = function(book) {
-        $scope.selectedBook = book;
-        console.log(book);
+      $http.get("/books/" + book.pk)
+      .then(function (response) {
+        $scope.selectedBook = response.data;
+      });
         $scope.showBookTable = false; 
         $scope.showSingleBook = true; 
       };

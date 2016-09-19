@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import QueryDict
 from django.http import HttpResponse
 from django.template import loader
-
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def index(request):
@@ -33,8 +33,12 @@ def book_detail(request, pk):
 	if request.method == 'GET':
 		try:
 			book = Book.objects.get(pk=pk)
+			author = book.author
 			data = serializers.serialize('json', [book])
 			data = json.loads(data)[0]
+			data["fields"]['author_first_name'] = author.first_name
+			data["fields"]['author_last_name'] = author.last_name
+
 		except Book.DoesNotExist:
 			data = {"error":"book not found"}
 		return JsonResponse(data, safe=False)
